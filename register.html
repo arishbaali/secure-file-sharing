@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cognito Register</title>
+
+    <!-- Cognito SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/amazon-cognito-identity-js/6.3.7/amazon-cognito-identity.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+        .box {
+            background: white;
+            padding: 25px;
+            width: 320px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #0073bb;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #005f99;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Create Account</h2>
+
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+
+    <button onclick="register()">Register</button>
+
+    <p id="msg"></p>
+</div>
+
+<script>
+    // 🔴 Replace with YOUR values
+    const poolData = {
+        UserPoolId: "YOUR_USER_POOL_ID",
+        ClientId: "YOUR_APP_CLIENT_ID"
+    };
+
+    const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+    function register() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        const attributeList = [];
+
+        const emailAttribute = new AmazonCognitoIdentity.CognitoUserAttribute({
+            Name: "email",
+            Value: email
+        });
+
+        attributeList.push(emailAttribute);
+
+        userPool.signUp(email, password, attributeList, null, function (err, result) {
+            if (err) {
+                document.getElementById("msg").innerHTML = err.message || JSON.stringify(err);
+                return;
+            }
+
+            document.getElementById("msg").innerHTML =
+                "Registration successful ✅<br>Check your email for verification code.";
+
+            console.log("User name is " + result.user.getUsername());
+        });
+    }
+</script>
+
+</body>
+</html>
